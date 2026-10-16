@@ -1,0 +1,25 @@
+# Build output (presets write to build/debug and build/release)
+build/
+out/
+
+# clangd cache
+.cache/
+
+# VS Code: keep shared settings, ignore personal ones
+.vscode/*
+!.vscode/settings.json
+
+# Compiled and generated files
+*.o
+*.obj
+*.a
+*.lib
+*.exe
+*.dll
+
+# Models and test data are large; download them instead of committing
+*.onnx
+
+# OS files
+Thumbs.db
+.DS_Store
