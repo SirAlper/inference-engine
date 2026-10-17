@@ -4,7 +4,7 @@ A neural network inference engine for running ONNX models on the **CPU**, writte
 
 The goal is a small, readable engine that is accelerated with SIMD (AVX2/FMA) and multithreading, and whose correctness and speed are measured against [onnxruntime](https://onnxruntime.ai/). It sits in the same space as onnxruntime and llama.cpp, but is focused on learning and on showing how such an engine works from the ground up.
 
-> **Status:** early development. The build system is in place and the tensor storage layer is being written. Nothing runs end to end yet. See [Roadmap](#roadmap).
+> **Status:** early development. The build system and unit tests are in place, and the tensor storage layer is written and tested; `Tensor` is next. Nothing runs end to end yet. See [Roadmap](#roadmap).
 
 ## Goals
 
@@ -31,7 +31,7 @@ Full setup instructions, including MSYS2 packages and VS Code configuration, are
 
 | Option | Default | Description |
 | --- | --- | --- |
-| `ENGINE_BUILD_TESTS` | `ON` (`OFF` in presets for now) | Build the GoogleTest unit tests |
+| `ENGINE_BUILD_TESTS` | `ON` | Build the GoogleTest unit tests |
 | `ENGINE_BUILD_BENCHMARKS` | `ON` (`OFF` in presets for now) | Build the Google Benchmark suite |
 | `ENGINE_ENABLE_AVX2` | `ON` | Compile `engine_core` with `-mavx2 -mfma` and define `ENGINE_HAS_AVX2` |
 
@@ -48,7 +48,7 @@ inference-engine/
 │   ├── graph/           graph representation (planned)
 │   ├── ops/             operator implementations (planned)
 │   └── runtime/         executor, thread pool, memory planner (planned)
-├── tests/               GoogleTest unit and correctness tests (planned)
+├── tests/               GoogleTest unit and correctness tests
 ├── benchmarks/          Google Benchmark suite (planned)
 └── docs/                design and build documentation
 ```

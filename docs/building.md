@@ -8,7 +8,7 @@
 | CMake | 4.2.1 | ≥ 3.25 is needed for presets version 6 |
 | Ninja | 1.13.2 | Generator used by the presets |
 | Protobuf | protoc 33.1 | Found in CONFIG mode (pulls in abseil) |
-| GoogleTest | — | Only needed when `ENGINE_BUILD_TESTS=ON` |
+| GoogleTest | 1.17.0 | Found in CONFIG mode; only needed when `ENGINE_BUILD_TESTS=ON` |
 | Google Benchmark | — | Only needed when `ENGINE_BUILD_BENCHMARKS=ON` |
 
 ## Windows (MSYS2 UCRT64)
@@ -43,7 +43,19 @@ Replace `debug` with `release` for an optimized build in `build/release`. Run be
 | `debug` | Debug | `build/debug` |
 | `release` | Release | `build/release` |
 
-The presets set the compiler (`C:/msys64/ucrt64/bin/g++.exe`) and Ninja paths explicitly. For now they also turn `ENGINE_BUILD_TESTS` and `ENGINE_BUILD_BENCHMARKS` off, because the `tests/` and `benchmarks/` directories are not set up yet.
+The presets set the compiler (`C:/msys64/ucrt64/bin/g++.exe`) and Ninja paths explicitly. Tests are built by default. For now the presets turn `ENGINE_BUILD_BENCHMARKS` off, because the `benchmarks/` directory is not set up yet.
+
+## Tests
+
+Unit tests use GoogleTest and live in `tests/`. They are built into a single executable, `engine_tests`, linked against `engine_core` and `GTest::gtest_main`. `gtest_discover_tests` registers every `TEST` with CTest after each build, so new tests show up in `ctest` without reconfiguring.
+
+```sh
+ctest --preset debug                          # run all tests
+ctest --preset debug -R StorageTest           # run tests whose name matches a regex
+build/debug/tests/engine_tests.exe            # run the executable directly
+```
+
+To add a test file, create it in `tests/` and add it to the `add_executable(engine_tests ...)` list in `tests/CMakeLists.txt`.
 
 Options can be overridden at configure time:
 

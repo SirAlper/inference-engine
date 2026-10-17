@@ -10,7 +10,7 @@
         "CMAKE_CXX_COMPILER": "C:/msys64/ucrt64/bin/g++.exe",
         "CMAKE_MAKE_PROGRAM": "C:/msys64/ucrt64/bin/ninja.exe",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-        "ENGINE_BUILD_TESTS": "OFF",
+        "ENGINE_BUILD_TESTS": "ON",
         "ENGINE_BUILD_BENCHMARKS": "OFF"
       }
     },

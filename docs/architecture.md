@@ -27,6 +27,7 @@ Everything except the command-line tool lives in a single static library, `engin
 | `engine_core` | static library | Exposes `src/` as a PUBLIC include directory, so headers are included as `"tensor/storage.hpp"` |
 | `engine_warnings` | INTERFACE library | Carries `-Wall -Wextra -Wpedantic -Wshadow -Wnon-virtual-dtor`; linked PRIVATE so warnings apply only to our own sources |
 | `onnx_proto` | static library *(planned)* | Generated from `proto/onnx.proto`; linked PRIVATE to `engine_core` |
+| `engine_tests` | executable | GoogleTest unit tests from `tests/`; built when `ENGINE_BUILD_TESTS` is on |
 | `engine_cli` | executable *(planned)* | Command-line tool for running a model |
 
 ### Protobuf isolation
@@ -51,7 +52,9 @@ When `ENGINE_ENABLE_AVX2` is on, `engine_core` is compiled with `-mavx2 -mfma` a
 
 - Members: `std::byte* data_` and `std::size_t nbytes_`.
 - Memory is aligned to `Storage::kAlignment` (64 bytes) using aligned `::operator new` / `::operator delete`. 64 bytes is one cache line and covers the alignment needs of AVX2 (32 bytes) and AVX-512 (64 bytes) loads.
-- Copying is deleted: a `Storage` is a unique owner of its memory. Sharing happens one level up, through `std::shared_ptr<Storage>`.
+- A zero-byte `Storage` allocates nothing; its `data()` is `nullptr`.
+- `data()` has a const and a non-const overload, so a `const Storage&` only gives read access to the bytes.
+- Copying and moving are deleted: a `Storage` is a unique owner of its memory and never changes address. Sharing happens one level up, through `std::shared_ptr<Storage>`.
 
 ### Tensor *(planned)*
 

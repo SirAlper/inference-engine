@@ -1,21 +1,30 @@
 #pragma once
 #include <cstddef>
 
-class Storage
+namespace engine
 {
-    private:
-
-        std::size_t nbytes_ = 0;
-        std::byte* data_ = nullptr;
-
+    // Owns a single 64-byte aligned, uninitialized byte buffer.
+    // Non-copyable and non-movable; lifetime is tied to the owning object.
+    class Storage
+    {
     public:
-        
-        explicit Storage(std::size_t nbytes);
-        Storage(const Storage&) = delete;
         static constexpr std::size_t kAlignment = 64;
-        Storage& operator=(const Storage&) = delete;
+        static_assert((kAlignment & (kAlignment - 1)) == 0, "kAlignment must be a power of two");
+
+        explicit Storage(std::size_t nbytes);
         ~Storage();
-        std::size_t nbytes() const;
-        std::byte* data() const;
-        
-};
+
+        Storage(const Storage&) = delete;
+        Storage& operator=(const Storage&) = delete;
+        Storage(Storage&&) = delete;
+        Storage& operator=(Storage&&) = delete;
+
+        std::size_t      nbytes() const noexcept { return nbytes_; }
+        std::byte*       data()         noexcept { return data_; }
+        const std::byte* data()   const noexcept { return data_; }
+
+    private:
+        std::size_t nbytes_ = 0;
+        std::byte*  data_   = nullptr;
+    };
+} // namespace engine
