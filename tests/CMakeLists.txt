@@ -3,6 +3,7 @@ include(GoogleTest)
 
 add_executable(engine_tests
     storage_test.cpp
+    dtype_test.cpp
 )
 
 target_link_libraries(engine_tests PRIVATE engine_core engine_warnings GTest::gtest_main)
