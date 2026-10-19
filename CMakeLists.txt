@@ -21,7 +21,20 @@ endif()
 # ---------------------------------------------------------
 option(ENGINE_BUILD_TESTS      "Build unit tests"            ON)
 option(ENGINE_BUILD_BENCHMARKS "Build benchmarks"            ON)
-option(ENGINE_ENABLE_AVX2      "Use AVX2 and FMA instructions" ON)
+# AVX2/FMA only exist on x86-64, so default to OFF elsewhere (e.g. Apple Silicon).
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|AMD64|amd64)$")
+    set(ENGINE_AVX2_DEFAULT ON)
+else()
+    set(ENGINE_AVX2_DEFAULT OFF)
+endif()
+option(ENGINE_ENABLE_AVX2      "Use AVX2 and FMA instructions" ${ENGINE_AVX2_DEFAULT})
+
+if(ENGINE_ENABLE_AVX2 AND NOT ENGINE_AVX2_DEFAULT)
+    message(FATAL_ERROR
+        "ENGINE_ENABLE_AVX2 is ON, but the target processor is "
+        "${CMAKE_SYSTEM_PROCESSOR}, which has no AVX2/FMA. "
+        "Configure with -DENGINE_ENABLE_AVX2=OFF.")
+endif()
 
 # ---------------------------------------------------------
 #  Common warnings

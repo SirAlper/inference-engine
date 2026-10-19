@@ -15,17 +15,17 @@ The goal is a small, readable engine that is accelerated with SIMD (AVX2/FMA) an
 
 ## Building
 
-Requires a C++20 compiler, CMake ≥ 3.25, Ninja and Protobuf. The project is developed on Windows with MSYS2 UCRT64 (GCC 15).
+Requires a C++20 compiler, CMake ≥ 3.25, Ninja and Protobuf. It builds on macOS (Homebrew, Apple clang) and on Windows with MSYS2 UCRT64 (GCC 15).
 
 ```sh
-cmake --preset debug
-cmake --build --preset debug
-ctest --preset debug
+cmake --preset macos-debug        # windows-debug on Windows
+cmake --build --preset macos-debug
+ctest --preset macos-debug
 ```
 
-Use the `release` preset for anything performance-related. Benchmarks are only meaningful in release builds.
+Use a `-release` preset for anything performance-related. Benchmarks are only meaningful in release builds.
 
-Full setup instructions, including MSYS2 packages and VS Code configuration, are in [docs/building.md](docs/building.md).
+Full setup instructions, including Homebrew and MSYS2 packages and VS Code configuration, are in [docs/building.md](docs/building.md).
 
 ### Build options
 
@@ -33,14 +33,14 @@ Full setup instructions, including MSYS2 packages and VS Code configuration, are
 | --- | --- | --- |
 | `ENGINE_BUILD_TESTS` | `ON` | Build the GoogleTest unit tests |
 | `ENGINE_BUILD_BENCHMARKS` | `ON` (`OFF` in presets for now) | Build the Google Benchmark suite |
-| `ENGINE_ENABLE_AVX2` | `ON` | Compile `engine_core` with `-mavx2 -mfma` and define `ENGINE_HAS_AVX2` |
+| `ENGINE_ENABLE_AVX2` | `ON` on x86-64, `OFF` elsewhere | Compile `engine_core` with `-mavx2 -mfma` and define `ENGINE_HAS_AVX2` |
 
 ## Project layout
 
 ```
 inference-engine/
 ├── CMakeLists.txt       root build file
-├── CMakePresets.json    debug / release presets (Ninja)
+├── CMakePresets.json    macos-* / windows-* presets (Ninja)
 ├── proto/               onnx.proto → onnx_proto library (planned)
 ├── src/                 engine_core static library
 │   ├── tensor/          Storage, Tensor

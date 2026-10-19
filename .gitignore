@@ -1,4 +1,4 @@
-# Build output (presets write to build/debug and build/release)
+# Build output (presets write to build/<preset name>)
 build/
 out/
 
