@@ -8,6 +8,7 @@
 // Compile-time checks
 static_assert(engine::dtype_size(engine::DType::Float32) == 4);
 static_assert(engine::dtype_size(engine::DType::Int64) == 8);
+static_assert(engine::dtype_of_v<float> == engine::DType::Float32);
 static_assert(sizeof(engine::DType) == 1);
 
 TEST(DTypeTest, SizeMatchesElementType)

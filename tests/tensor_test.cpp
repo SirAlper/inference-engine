@@ -35,7 +35,7 @@ TEST(TensorTest, NegativeDimensionsThrows)
     EXPECT_THROW(engine::Tensor t({2,-3,4}, engine::DType::Int64), std::invalid_argument);
 }
 
-TEST(TensorTest, ScalarTensor)
+TEST(TensorTest, OneDimensionalTensor)
 {
     engine::Tensor t({2}, engine::DType::Float32); 
     

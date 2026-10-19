@@ -10,8 +10,20 @@ namespace engine
     enum class DType : std::uint8_t
     {
         Float32,
-        Int64
+        Int64         
     };
+
+    template <typename T>
+    struct dtype_of;
+
+    template<>
+    struct dtype_of<float> {static constexpr DType value = DType::Float32;};
+
+    template<>
+    struct dtype_of<std::int64_t>{static constexpr DType value = DType::Int64;};
+
+    template<typename T>
+    inline constexpr DType dtype_of_v = dtype_of<T>::value; 
     
     constexpr std::size_t dtype_size(DType dtype)
     {
