@@ -3,6 +3,7 @@
 # ---------------------------------------------------------
 add_library(engine_core STATIC
     tensor/storage.cpp
+    tensor/tensor.cpp
 )
 
 # Allows #include "tensor/storage.hpp"; PUBLIC so that tests/benchmarks
