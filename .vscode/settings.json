@@ -1,5 +1,9 @@
 {
   "cmake.useCMakePresets": "always",
   "cmake.configureOnOpen": true,
-  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
+  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+  "C_Cpp.default.compileCommands": [
+    "${workspaceFolder}/build/macos-debug/compile_commands.json",
+    "${workspaceFolder}/build/windows-debug/compile_commands.json"
+  ]
 }
