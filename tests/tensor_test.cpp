@@ -87,3 +87,26 @@ TEST(TensorTest, IsConstOverloadType)
     const engine::Tensor& ct = t;
     static_assert(std::is_same_v<decltype(ct.data<float>()), const float*>); 
 }
+
+TEST(TensorTest, TensorEmpty)
+{
+    engine::Tensor t = engine::Tensor::empty({2,3}, engine::DType::Float32);
+
+    const std::vector<std::int64_t> expected_shape{2,3};
+
+    EXPECT_EQ(t.shape(), expected_shape);
+    EXPECT_EQ(t.numel(), 6);
+    EXPECT_EQ(t.dtype(), engine::DType::Float32);
+}
+
+TEST(TensorTest, TensorZeros)
+{
+    engine::Tensor t = engine::Tensor::zeros({2,3}, engine::DType::Float32);
+
+    float* p = t.data<float>();
+
+    for(int i = 0; i < t.numel(); i++)
+    {
+        EXPECT_EQ(p[i], 0.0f);
+    }
+}

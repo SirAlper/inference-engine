@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <utility>
+#include <cstring>
 
 namespace engine
 {
@@ -44,6 +45,17 @@ namespace engine
     Tensor Tensor::empty(std::vector<std::int64_t> shape, DType dtype)
     {
         return Tensor(std::move(shape), dtype);       
+    }
+
+    Tensor Tensor::zeros(std::vector<std::int64_t> shape, DType dtype)
+    {
+        Tensor t = Tensor::empty(std::move(shape), dtype);
+
+        if(t.nbytes() > 0)
+        {
+            std::memset(t.storage_ -> data(), 0, t.nbytes());
+        }
+        return t;
     }
     
 
