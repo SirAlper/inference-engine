@@ -17,6 +17,8 @@ namespace engine
         public:
             explicit Tensor(std::vector<std::int64_t> shape, DType dtype);
 
+            static Tensor empty(std::vector<std::int64_t> shape, DType dtype);
+
             const std::vector<std::int64_t>& shape()   const noexcept { return shape_; }
             const std::vector<std::int64_t>& strides() const noexcept { return strides_; }
             DType                            dtype()   const noexcept { return dtype_; }

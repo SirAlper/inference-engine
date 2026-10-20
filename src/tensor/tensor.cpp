@@ -8,6 +8,9 @@ namespace engine
 {
     Tensor::Tensor(std::vector<std::int64_t> shape, DType dtype) : shape_(std::move(shape)), dtype_(dtype)
     {
+
+        
+
         std::int64_t tempnumel = 1;
         for(auto dim : shape_)
         {
@@ -36,6 +39,11 @@ namespace engine
         storage_ = std::make_shared<Storage>(static_cast<std::size_t>(numel_) * dtype_size(dtype_));
 
          
+    }
+
+    Tensor Tensor::empty(std::vector<std::int64_t> shape, DType dtype)
+    {
+        return Tensor(std::move(shape), dtype);       
     }
     
 
