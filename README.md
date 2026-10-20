@@ -4,7 +4,7 @@ A neural network inference engine for running ONNX models on the **CPU**, writte
 
 The goal is a small, readable engine that is accelerated with SIMD (AVX2/FMA) and multithreading, and whose correctness and speed are measured against [onnxruntime](https://onnxruntime.ai/). It sits in the same space as onnxruntime and llama.cpp, but is focused on learning and on showing how such an engine works from the ground up.
 
-> **Status:** early development. The build system and unit tests are in place, and the tensor storage layer is written and tested; `Tensor` is next. Nothing runs end to end yet. See [Roadmap](#roadmap).
+> **Status:** early development. The build system and unit tests are in place. `Storage` and `DType` are written and tested. `Tensor` is in progress: shape, row-major strides, storage allocation and typed element access (`data<T>()`) work; factories and views are next. Nothing runs end to end yet. See [Roadmap](#roadmap).
 
 ## Goals
 
@@ -43,7 +43,7 @@ inference-engine/
 ├── CMakePresets.json    macos-* / windows-* presets (Ninja)
 ├── proto/               onnx.proto → onnx_proto library (planned)
 ├── src/                 engine_core static library
-│   ├── tensor/          Storage, Tensor
+│   ├── tensor/          Storage, DType, Tensor
 │   ├── loader/          ONNX loader, the only module that uses protobuf (planned)
 │   ├── graph/           graph representation (planned)
 │   ├── ops/             operator implementations (planned)

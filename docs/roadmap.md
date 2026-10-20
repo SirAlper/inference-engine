@@ -4,8 +4,12 @@ Each milestone ends with something that can be verified: a test against a refere
 
 ## 1. Tensor, Storage and naive operators — *in progress*
 
-- `Storage`: 64-byte aligned, non-copyable owner of raw memory.
-- `Tensor`: shape, strides, dtype (`float32`, `int64`), shared storage plus offset, zero-copy views.
+- [x] `Storage`: 64-byte aligned, non-copyable owner of raw memory.
+- [x] `DType`: `float32` and `int64`, with `dtype_size`, `dtype_name` and the compile-time `dtype_of<T>` mapping.
+- [x] `Tensor` basics: shape, row-major strides, `numel`/`nbytes`, shared storage plus element offset.
+- [x] `Tensor::data<T>()`: typed element access with a run-time dtype check.
+- [ ] `Tensor` factories (`zeros`, `from_vector`).
+- [ ] Zero-copy views (reshape, transpose, slice), `is_contiguous()` and `contiguous()`.
 - Reference (unoptimized) operators in `ops/`, written for clarity rather than speed. They serve as the correctness baseline for every later optimization.
 - First unit tests with GoogleTest.
 

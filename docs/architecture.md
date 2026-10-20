@@ -56,13 +56,40 @@ When `ENGINE_ENABLE_AVX2` is on, `engine_core` is compiled with `-mavx2 -mfma` a
 - `data()` has a const and a non-const overload, so a `const Storage&` only gives read access to the bytes.
 - Copying and moving are deleted: a `Storage` is a unique owner of its memory and never changes address. Sharing happens one level up, through `std::shared_ptr<Storage>`.
 
-### Tensor *(planned)*
+### DType
 
-`Tensor` is a non-templated class whose element type is chosen at run time.
+`DType` (`src/tensor/dtype.hpp`) is a one-byte `enum class` naming the element type of a tensor at run time.
 
-- Supported dtypes: `float32` and `int64`.
-- Describes data with a **shape**, **strides** and a **dtype**.
-- Holds its data as `std::shared_ptr<Storage>` plus an element **offset**.
+- Values: `Float32` and `Int64`.
+- `dtype_size(DType)` returns the element size in bytes, and `dtype_name(DType)` returns `"float32"` / `"int64"`. Both are `constexpr`.
+- `dtype_of<T>` / `dtype_of_v<T>` map a C++ type to its `DType` at compile time: `float` → `Float32`, `std::int64_t` → `Int64`. The primary template has no definition, so an unsupported type such as `double` fails to compile instead of being accepted silently.
+
+### Tensor *(in progress)*
+
+`Tensor` (`src/tensor/tensor.hpp`) is a non-templated class whose element type is chosen at run time.
+
+- Describes data with a **shape**, **strides** and a **dtype**. The constructor rejects negative dimensions with `std::invalid_argument`, computes `numel`, sets row-major strides (in elements) and allocates a `Storage` of `numel * dtype_size(dtype)` bytes. The memory is not initialized.
+- Holds its data as `std::shared_ptr<Storage>` plus an **offset**. The offset is counted in elements, like the strides, so the address of element `(i, j)` is `base + offset + i*stride[0] + j*stride[1]`.
+
+#### Typed access: `data<T>()`
+
+The dtype is only known at run time (it comes from the model file), but a C++ pointer type has to be known at compile time. `data<T>()` connects the two:
+
+```cpp
+engine::Tensor t({2, 3}, engine::DType::Float32);
+float* p = t.data<float>();      // OK
+t.data<std::int64_t>();          // throws std::invalid_argument
+```
+
+1. It compares `dtype_of_v<T>` with the tensor's dtype and throws `std::invalid_argument` if they differ.
+2. It reinterprets the storage's `std::byte*` as `T*`.
+3. It adds the element offset. The offset is added **after** the cast, so pointer arithmetic moves in units of `T`.
+
+There are two overloads. On a `const Tensor`, `data<T>() const` returns `const T*`, so read-only code cannot write through the pointer. The const overload goes through a `const std::byte*`, because `shared_ptr::operator->` does not carry the tensor's constness over to the `Storage` it points to.
+
+Since the storage base is 64-byte aligned and the offset is a whole number of elements, the pointer returned for a tensor with offset 0 is 64-byte aligned.
+
+#### Views *(planned)*
 
 Because several tensors can point at the same `Storage` with different offsets, shapes and strides, operations such as reshape, transpose and slicing can produce **views without copying** any data. The `Storage` is freed when the last tensor referring to it goes away.
 
