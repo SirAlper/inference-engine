@@ -67,6 +67,33 @@ namespace engine
         }
         return t;
     }
+    bool Tensor::is_contiguous() const noexcept
+    {
+        if(Tensor::numel_ == 0 || static_cast<std::int64_t>(shape_.size()) == 0)
+        {
+            return true;
+        }
+        std::vector<std::int64_t> expected_strides = strides_helper(Tensor::shape_);
+
+        
+        for(std::size_t d = 0; d < strides_.size(); d++)
+        {
+            if(shape_[d] == 1)
+            {
+                continue;
+            }
+
+            if(strides_[d] != expected_strides[d])
+            {
+                return false;
+            }
+            
+
+            
+
+        }
+        return true;
+    }
     
 
 }

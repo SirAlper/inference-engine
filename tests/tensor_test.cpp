@@ -130,3 +130,30 @@ TEST(TensorTest, FromVector)
         EXPECT_EQ(p[i], values[i]);
     }
 }
+
+TEST(TensorTest, NewTensorIsContiguous)
+{
+    engine::Tensor t({2,3,4}, engine::DType::Float32);
+
+    EXPECT_TRUE(t.is_contiguous());
+}
+TEST(TensorTest, ScalarIsContiguous)
+{
+    engine::Tensor t({}, engine::DType::Int64);
+
+    EXPECT_TRUE(t.is_contiguous());
+}
+TEST(TensorTest, ZeroSizedIsContiguous)
+{
+    engine::Tensor t({2,0,3}, engine::DType::Float32);
+
+    EXPECT_TRUE(t.is_contiguous());
+}
+TEST(TensorTest, SizeOneDimsAreContiguous)
+{
+    engine::Tensor t({1,3,1}, engine::DType::Float32);
+
+    EXPECT_TRUE(t.is_contiguous());
+}
+
+
