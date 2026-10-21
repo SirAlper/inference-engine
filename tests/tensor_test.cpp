@@ -110,3 +110,23 @@ TEST(TensorTest, TensorZeros)
         EXPECT_EQ(p[i], 0.0f);
     }
 }
+
+TEST(TensorTest, FromVector)
+{
+    std::vector<std::int64_t> values{1,2,3,4,5,6};
+
+    engine::Tensor t = engine::Tensor::from_vector(values, {2,3});
+
+    EXPECT_EQ(t.dtype(), engine::DType::Int64);
+
+    const std::vector<std::int64_t> expected_shape{2,3};
+
+    EXPECT_EQ(t.shape(), expected_shape);
+
+    std::int64_t* p = t.data<std::int64_t>();
+
+    for(int i = 0; i < t.numel(); i++)
+    {
+        EXPECT_EQ(p[i], values[i]);
+    }
+}

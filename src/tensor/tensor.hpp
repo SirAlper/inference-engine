@@ -6,6 +6,8 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <algorithm>
+#include <utility>
 
 #include "dtype.hpp"
 #include "storage.hpp"
@@ -28,6 +30,24 @@ namespace engine
             std::int64_t                     offset()  const noexcept { return offset_; }
             std::size_t                      nbytes()  const noexcept { return static_cast<std::size_t>(numel_) * dtype_size(dtype_); }
             
+
+            template <typename V>
+            static Tensor from_vector(const std::vector<V>& values, std::vector<std::int64_t> shape)
+            {
+                Tensor t = empty(std::move(shape), dtype_of_v<V>);
+
+                if(values.size() != static_cast<std::size_t>(t.numel()))
+                {
+                    throw std::invalid_argument("invalid argument of from_vector");
+                }
+
+                V* dst= t.data<V>();
+
+                std::copy(values.begin(), values.end(), dst);
+
+                return t;
+            }
+
             template <typename U>
             U* data() 
             {

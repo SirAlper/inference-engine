@@ -38,7 +38,7 @@ namespace engine
         }
 
         storage_ = std::make_shared<Storage>(static_cast<std::size_t>(numel_) * dtype_size(dtype_));
-
+        
          
     }
 
