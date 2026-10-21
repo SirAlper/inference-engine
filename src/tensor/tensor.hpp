@@ -29,7 +29,7 @@ namespace engine
             std::int64_t                     numel()   const noexcept { return numel_; }
             std::int64_t                     offset()  const noexcept { return offset_; }
             std::size_t                      nbytes()  const noexcept { return static_cast<std::size_t>(numel_) * dtype_size(dtype_); }
-            
+            bool                             is_contiguous() const noexcept;
 
             template <typename V>
             static Tensor from_vector(const std::vector<V>& values, std::vector<std::int64_t> shape)

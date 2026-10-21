@@ -7,6 +7,28 @@
 
 namespace engine
 {
+    namespace
+    {
+        std::vector<int64_t> strides_helper(const std::vector<int64_t>& shape)
+        {
+            std::vector<int64_t> strides;
+
+            strides.resize(shape.size());
+
+            std::int64_t running = 1;
+
+            std::int64_t rank = static_cast<std::int64_t>(shape.size());
+
+            for(std::int64_t i = rank - 1;  0 <= i; i--)
+            {
+                strides[i] = running;
+                running *= std::max(shape[i], std::int64_t{1});
+            }
+
+            return strides;
+        }
+    }
+
     Tensor::Tensor(std::vector<std::int64_t> shape, DType dtype) : shape_(std::move(shape)), dtype_(dtype)
     {
 
@@ -23,19 +45,7 @@ namespace engine
         }
         numel_ = tempnumel;
 
-        strides_.resize(shape_.size());
-        
-        std::int64_t running = 1;
-        std::int64_t border = 0;
-        
-    
-        std::int64_t rank = static_cast<std::int64_t>(shape_.size());
-        
-        for(std::int64_t i= rank - 1; border <= i; i--)
-        {   
-            strides_[i] = running;
-            running *= std::max(shape_[i], std::int64_t{1});                
-        }
+        strides_ = strides_helper(shape_);
 
         storage_ = std::make_shared<Storage>(static_cast<std::size_t>(numel_) * dtype_size(dtype_));
         
