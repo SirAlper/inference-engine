@@ -21,6 +21,7 @@ namespace engine
 
             static Tensor empty(std::vector<std::int64_t> shape, DType dtype);
             static Tensor zeros(std::vector<std::int64_t> shape, DType dtype);
+            Tensor view(std::vector<std::int64_t> new_shape) const;
 
             const std::vector<std::int64_t>& shape()   const noexcept { return shape_; }
             const std::vector<std::int64_t>& strides() const noexcept { return strides_; }
@@ -79,6 +80,12 @@ namespace engine
             }
 
         private:
+            Tensor(std::shared_ptr<Storage> storage,
+                   std::vector<std::int64_t> shape,
+                   std::vector<std::int64_t> strides,
+                   std::int64_t offset,
+                   DType dtype);
+            
             std::vector<std::int64_t> shape_;
             std::vector<std::int64_t> strides_;
             std::int64_t offset_ = 0;

@@ -27,6 +27,23 @@ namespace engine
 
             return strides;
         }
+
+        std::int64_t numel_helper(const std::vector<std::int64_t>& shape)
+        {
+            std::int64_t numel = 1;
+            
+            
+            for(auto dim : shape)
+            {
+                if(dim < 0)
+                {
+                    throw std::invalid_argument("shape cannot be negative");    
+                }
+                numel *= dim;
+            } 
+            
+            return numel;
+        }
     }
 
     Tensor::Tensor(std::vector<std::int64_t> shape, DType dtype) : shape_(std::move(shape)), dtype_(dtype)
@@ -34,16 +51,7 @@ namespace engine
 
         
 
-        std::int64_t tempnumel = 1;
-        for(auto dim : shape_)
-        {
-            if(dim < 0)
-            {
-                throw std::invalid_argument("shape cannot be negative");
-            }
-            tempnumel *= dim;
-        }
-        numel_ = tempnumel;
+        numel_ = numel_helper(shape_);
 
         strides_ = strides_helper(shape_);
 
@@ -51,6 +59,16 @@ namespace engine
         
          
     }
+
+    Tensor::Tensor(std::shared_ptr<Storage> storage,
+                   std::vector<std::int64_t> shape,
+                   std::vector<std::int64_t> strides,
+                   std::int64_t offset,
+                   DType dtype) : shape_(std::move(shape)) ,strides_(std::move(strides)), offset_(offset), dtype_(dtype), storage_(std::move(storage)) 
+                    {
+
+                        numel_ = numel_helper(shape_);
+                    }
 
     Tensor Tensor::empty(std::vector<std::int64_t> shape, DType dtype)
     {
@@ -86,14 +104,28 @@ namespace engine
             if(strides_[d] != expected_strides[d])
             {
                 return false;
-            }
-            
-
-            
+            }      
 
         }
         return true;
     }
+
+        Tensor Tensor::view(std::vector<std::int64_t> new_shape) const
+        {
+            if(this -> is_contiguous() == false)
+            {
+                throw std::invalid_argument("tensor is not contiguous");
+            }
+
+            if(numel_helper(new_shape) != numel_)
+            {
+                throw std::invalid_argument("the numel of tensor is invalid");
+            }
+            
+            std::vector<std::int64_t> new_strides = strides_helper(new_shape);
+            
+            return Tensor(storage_, new_shape, new_strides, offset_, dtype_);;
+        }
     
 
 }
