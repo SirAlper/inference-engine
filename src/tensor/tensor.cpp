@@ -142,12 +142,12 @@ namespace engine
         std::vector<std::int64_t> new_shape = shape_;
         std::vector<std::int64_t> new_strides = strides_;
 
-        if(idx1 < 0 && idx2 < 0)
+        if(idx1 < 0 || idx2 < 0)
         {
-            throw std::invalid_argument("indexes cannot be negative");
+            throw std::out_of_range("indexes cannot be negative");
         }
 
-        if(idx1 < shape_.size() || idx2 < shape_.size())
+        if(idx1 < shape_.size() && idx2 < shape_.size())
         {
             std::swap(new_shape[idx1], new_shape[idx2]);
             std::swap(new_strides[idx1], new_strides[idx2]);

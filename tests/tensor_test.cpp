@@ -192,4 +192,24 @@ TEST(TensorTest, ViewNumelMismatchThrows)
     EXPECT_THROW(t.view({2,3,4}), std::invalid_argument);
 }
 
+TEST(TensorTest, TransposeOutOfRangeThrows)
+{
+    engine::Tensor t({2,3}, engine::DType::Float32);
+
+    EXPECT_THROW(t.transpose({0,5}), std::out_of_range);
+    EXPECT_THROW(t.transpose({-1,0}), std::out_of_range);
+}
+
+TEST(TensorTest, TransposeWork)
+{
+    std::vector<float> values{1,2,3,4,5,6};
+    engine::Tensor t = engine::Tensor::from_vector(values, {2,3});
+    engine::Tensor tt = t.transpose({0,1});
+    
+    const float* p = tt.data<float>();
+    const auto& s = tt.strides();
+
+    EXPECT_EQ(p[0 * s[0] + 1 * s[1]], 4.0f);
+}
+
 
