@@ -147,7 +147,7 @@ namespace engine
             throw std::invalid_argument("indexes cannot be negative");
         }
 
-        if(idx1 < shape_.size() && idx2 < shape_.size())
+        if(idx1 < shape_.size() || idx2 < shape_.size())
         {
             std::swap(new_shape[idx1], new_shape[idx2]);
             std::swap(new_strides[idx1], new_strides[idx2]);
