@@ -23,6 +23,7 @@ namespace engine
             static Tensor zeros(std::vector<std::int64_t> shape, DType dtype);
             Tensor view(std::vector<std::int64_t> new_shape) const;
             Tensor transpose(std::vector<std::int64_t> indexes) const;
+            Tensor contiguous() const;
 
             const std::vector<std::int64_t>& shape()   const noexcept { return shape_; }
             const std::vector<std::int64_t>& strides() const noexcept { return strides_; }

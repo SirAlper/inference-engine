@@ -212,4 +212,63 @@ TEST(TensorTest, TransposeWork)
     EXPECT_EQ(p[0 * s[0] + 1 * s[1]], 4.0f);
 }
 
+TEST(TensorTest, ContiguousCopiesInLogicalOrder)
+{
+    std::vector<float> values{1,2,3,4,5,6};
+    engine::Tensor t = engine::Tensor::from_vector(values, {2,3});
+    engine::Tensor c = t.transpose({0,1}).contiguous();
+
+    const std::vector<float> expected{1,4,2,5,3,6};
+    const float* p = c.data<float>();
+
+    for(size_t i= 0; i < values.size(); i++)
+    {
+        EXPECT_EQ(p[i], expected[i]);
+    }
+    EXPECT_TRUE(c.is_contiguous());
+}
+
+TEST(TensorTest, ContiguousCopiesInt64)
+{
+    std::vector<std::int64_t> values{1,2,3,4,5,6};
+    engine::Tensor t = engine::Tensor::from_vector(values, {2,3});
+    engine::Tensor c = t.transpose({0,1}).contiguous();
+
+    const std::vector<std::int64_t> expected{1,4,2,5,3,6};
+    const std::int64_t* p = c.data<std::int64_t>();
+
+    for(std::size_t i = 0; i < expected.size(); i++)
+    {
+        EXPECT_EQ(p[i], expected[i]);
+    }
+    EXPECT_TRUE(c.is_contiguous());
+}
+
+TEST(TensorTest, ContiguousThreeDimensional)
+{
+    std::vector<float> values{0,1,2,3,4,5,6,7,8,9,10,11};
+    engine::Tensor t = engine::Tensor::from_vector(values, {2,2,3});
+    engine::Tensor c = t.transpose({0,2}).contiguous();
+
+    // c(a,b,k) == t(k,b,a) == k*6 + b*3 + a
+    const std::vector<float> expected{0,6,3,9, 1,7,4,10, 2,8,5,11};
+    const float* p = c.data<float>();
+
+    const std::vector<std::int64_t> expected_shape{3,2,2};
+    EXPECT_EQ(c.shape(), expected_shape);
+    for(std::size_t i = 0; i < expected.size(); i++)
+    {
+        EXPECT_EQ(p[i], expected[i]);
+    }
+    EXPECT_TRUE(c.is_contiguous());
+}
+
+TEST(TensorTest, ContiguousOnContiguousSharesStorage)
+{
+    engine::Tensor t = engine::Tensor::zeros({2,3}, engine::DType::Float32);
+    engine::Tensor c = t.contiguous();
+
+    EXPECT_EQ(c.data<float>(), t.data<float>());
+}
+
 

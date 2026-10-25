@@ -147,7 +147,7 @@ namespace engine
             throw std::out_of_range("indexes cannot be negative");
         }
 
-        if(idx1 < shape_.size() && idx2 < shape_.size())
+        if(idx1 < rank() && idx2 < rank())
         {
             std::swap(new_shape[idx1], new_shape[idx2]);
             std::swap(new_strides[idx1], new_strides[idx2]);
@@ -160,4 +160,38 @@ namespace engine
         return Tensor(storage_, std::move(new_shape), std::move(new_strides), offset_, dtype_);
     }
 
+    Tensor Tensor::contiguous() const
+    {
+        if(is_contiguous())
+        {
+            return *this;
+        }
+
+        Tensor t = Tensor::empty(shape_, dtype_);
+        std::vector<std::int64_t> indexes(shape_.size(), 0);
+        const std::size_t esize = dtype_size(dtype_);
+        for(std::int64_t i = 0; i < numel_; i++)
+        {
+            std::int64_t src = offset_;
+            for(std::int64_t k = 0; k < rank(); k++)
+            {
+                src += indexes[k] * strides_[k];
+            }
+            for(std::int64_t d = rank() - 1; d >= 0; d--)
+            {
+                indexes[d]++;
+
+                if(indexes[d] < shape_[d])
+                {
+                    break;
+                }
+                indexes[d] = 0;
+            }
+
+            std::memcpy(t.storage_ -> data() + i * esize,
+             storage_ -> data() + src * esize, 
+             esize);
+        }
+        return t;
+    }
 }
