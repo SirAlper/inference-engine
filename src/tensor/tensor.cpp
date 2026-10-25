@@ -124,7 +124,7 @@ namespace engine
             
             std::vector<std::int64_t> new_strides = strides_helper(new_shape);
             
-            return Tensor(storage_, new_shape, new_strides, offset_, dtype_);;
+            return Tensor(storage_, std::move(new_shape), std::move(new_strides), offset_, dtype_);
         }
     
 

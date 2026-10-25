@@ -156,4 +156,40 @@ TEST(TensorTest, SizeOneDimsAreContiguous)
     EXPECT_TRUE(t.is_contiguous());
 }
 
+TEST(TensorTest, ViewChangesShapeAndStrides)
+{
+    engine::Tensor t({2,3}, engine::DType::Float32);
+    engine::Tensor v = t.view({3,2});
+
+    const std::vector<std::int64_t> expected_shape{3,2};
+    const std::vector<std::int64_t> expected_strides{2,1};
+
+    EXPECT_EQ(v.shape(), expected_shape);
+    EXPECT_EQ(v.strides(), expected_strides);
+    EXPECT_EQ(v.numel(), 6);
+}
+
+TEST(TensorTest, ViewSharesStorage)
+{
+    engine::Tensor t = engine::Tensor::zeros({2,3}, engine::DType::Float32);
+    engine::Tensor v = t.view({3,2});
+
+
+    EXPECT_EQ(t.data<float>(), v.data<float>());
+
+    float* vp = v.data<float>();
+    vp[5] = 42.0f;
+
+    const float* tp = t.data<float>();
+
+    EXPECT_EQ(tp[5], 42.0f);
+
+}
+
+TEST(TensorTest, ViewNumelMismatchThrows)
+{
+    engine::Tensor t({2,3}, engine::DType::Float32);
+    EXPECT_THROW(t.view({2,3,4}), std::invalid_argument);
+}
+
 
