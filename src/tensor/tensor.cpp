@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <utility>
 #include <cstring>
+#include <vector>
 
 namespace engine
 {
@@ -44,6 +45,7 @@ namespace engine
             
             return numel;
         }
+        
     }
 
     Tensor::Tensor(std::vector<std::int64_t> shape, DType dtype) : shape_(std::move(shape)), dtype_(dtype)
@@ -110,22 +112,52 @@ namespace engine
         return true;
     }
 
-        Tensor Tensor::view(std::vector<std::int64_t> new_shape) const
+    Tensor Tensor::view(std::vector<std::int64_t> new_shape) const
+    {
+        if(this -> is_contiguous() == false)
         {
-            if(this -> is_contiguous() == false)
-            {
-                throw std::invalid_argument("tensor is not contiguous");
-            }
-
-            if(numel_helper(new_shape) != numel_)
-            {
-                throw std::invalid_argument("the numel of tensor is invalid");
-            }
-            
-            std::vector<std::int64_t> new_strides = strides_helper(new_shape);
-            
-            return Tensor(storage_, std::move(new_shape), std::move(new_strides), offset_, dtype_);
+            throw std::invalid_argument("tensor is not contiguous");
         }
-    
+
+        if(numel_helper(new_shape) != numel_)
+        {
+            throw std::invalid_argument("the numel of tensor is invalid");
+        }
+
+        std::vector<std::int64_t> new_strides = strides_helper(new_shape);
+
+        return Tensor(storage_, std::move(new_shape), std::move(new_strides), offset_, dtype_);
+    }
+
+    Tensor Tensor::transpose(std::vector<std::int64_t> indexes) const
+    {
+        if(indexes.size() != 2)
+        {
+            throw std::invalid_argument("transpose can take two index parameters");
+        }
+
+        std::int64_t idx1 = indexes[0];
+        std::int64_t idx2 = indexes[1];
+
+        std::vector<std::int64_t> new_shape = shape_;
+        std::vector<std::int64_t> new_strides = strides_;
+
+        if(idx1 < 0 && idx2 < 0)
+        {
+            throw std::invalid_argument("indexes cannot be negative");
+        }
+
+        if(idx1 < shape_.size() && idx2 < shape_.size())
+        {
+            std::swap(new_shape[idx1], new_shape[idx2]);
+            std::swap(new_strides[idx1], new_strides[idx2]);
+        }
+        else
+        {
+            throw std::out_of_range("transpose: dimension index out of range");
+        }
+
+        return Tensor(storage_, std::move(new_shape), std::move(new_strides), offset_, dtype_);
+    }
 
 }
